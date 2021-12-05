@@ -10,9 +10,11 @@ module PartTwo
   end
 
   def main(input)
-    solve(input.split("\n").map do |line|
+    lines = input.split("\n").map do |line|
       line.split('->').map { |vector| vector.split(',').map(&:to_i) }
-    end.to_a)
+    end.to_a
+
+    solve lines
   end
 
   def solve(lines)
@@ -23,16 +25,14 @@ module PartTwo
   end
 
   def interpolate_line_points(line)
-    from, to = line.sort
-    from_x, from_y = from
-    to_x, to_y = to
+    (from_x, from_y), (to_x, to_y) = line.sort
 
     if from_x == to_x
       (from_y..to_y).map { |y| [from_x, y] }
     elsif from_y == to_y
       (from_x..to_x).map { |x| [x, from_y] }
     else
-      y_direction = to_y - from_y > 0 ? 1 : -1
+      y_direction = to_y <=> from_y
 
       (from_x..to_x).map.with_index { |_, i| [from_x + i, from_y + i*y_direction] }
     end

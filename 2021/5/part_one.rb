@@ -10,9 +10,11 @@ module PartOne
   end
 
   def main(input)
-    solve(input.split("\n").map do |line|
+    lines = input.split("\n").map do |line|
       line.split('->').map { |vector| vector.split(',').map(&:to_i) }
-    end.to_a)
+    end.to_a
+
+    solve lines
   end
 
   def solve(lines)
