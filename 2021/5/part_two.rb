@@ -12,7 +12,7 @@ module PartTwo
   def main(input)
     lines = input.split("\n").map do |line|
       line.split('->').map { |vector| vector.split(',').map(&:to_i) }
-    end.to_a
+    end
 
     solve lines
   end
