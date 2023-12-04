@@ -1,8 +1,6 @@
 module PartTwo
   extend self
 
-  SYMBOLS = /[^.0-9]/
-
   def example_solution
     467835
   end
@@ -82,11 +80,5 @@ module PartTwo
     end_column = number[:position][1] + number[:number].size
 
     (start_row..end_row).to_a.product((start_column..end_column).to_a)
-      # .select { in_map?(map, _1) }
   end
-
-  # def in_map?(map, position)
-  #   position[0] >= 0 and position[0] < map.size and
-  #   position[1] >= 0 and position[1] < map[0].size
-  # end
 end
