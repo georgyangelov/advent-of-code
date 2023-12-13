@@ -30,54 +30,44 @@ module PartOne
     possible_matches record.springs, record.groups
   end
 
-  def possible_matches(springs, numbers, level = 1, hash = {})
+  def possible_matches(springs, numbers, hash = {})
     original_springs = springs
 
     if numbers.size == 0
-      if springs =~ /^[\.?]*$/
-        return 1
-      else
+      if springs.include? '#'
         return 0
+      else
+        return 1
       end
     end
-
-    first_number = numbers[0]
-    matches = 0
 
     memo = hash[[springs, numbers]]
-    if memo
-      # puts "'#{original_springs}' #{numbers.join(',')} -> #{matches}"
-      return memo
+    return memo if memo
+
+    matches = 0
+
+    has_match = match_at_start?(springs, numbers[0])
+    if has_match
+      rest_of_springs = springs[(numbers[0] + 1)..] || ''
+
+      possible_rest_variations = possible_matches(rest_of_springs, numbers.drop(1), hash)
+
+      matches += possible_rest_variations
     end
 
-    loop do
-      break if springs.size < first_number
-
-      has_match = match_at_start?(springs, first_number)
-      if has_match
-        rest_of_springs = springs[(first_number + 1)..] || ''
-
-        possible_rest_variations = possible_matches(rest_of_springs, numbers.drop(1), level + 1, hash)
-
-        # puts "'#{springs}' #{numbers.join(',')} -> "
-
-        matches += possible_rest_variations
-      end
-
-      break if springs[0] == '#' || springs.size == 1
-
-      springs = springs[1..]
+    if springs[0] != '#' && springs.size > 1
+      matches += possible_matches(springs[1..], numbers, hash)
     end
 
     hash[[original_springs, numbers]] = matches
-
-    # puts "'#{original_springs}' #{numbers.join(',')} -> #{matches}" if level <= 5
 
     matches
   end
 
   def match_at_start?(springs, number)
     i = 0
+
+    return false if springs.size < number
 
     while i < number
       return false if springs[i] == '.'
