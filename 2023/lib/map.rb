@@ -29,6 +29,15 @@ Position = Struct.new(:row, :col) do
   end
 end
 
+def opposite_direction(direction)
+  case direction
+  when :left then :right
+  when :right then :left
+  when :up then :down
+  when :down then :up
+  end
+end
+
 class Map
   attr_reader :grid
 
@@ -43,7 +52,15 @@ class Map
   end
 
   def self.from_string(string)
-    Map.new(string.split("\n").map { _1.chars })
+    Map.new(string.split("\n").map do |row|
+      row.chars.map do |c|
+        if block_given?
+          yield c
+        else
+          c
+        end
+      end
+    end)
   end
 
   def initialize(grid)
@@ -59,8 +76,8 @@ class Map
   end
 
   def map
-    new_grid = @grid.map do |row|
-      @grid[row].map do |col|
+    new_grid = rows.times.map do |row|
+      cols.times.map do |col|
         yield @grid[row][col]
       end
     end
@@ -108,11 +125,15 @@ class Map
     @grid[position.row][position.col]
   end
 
+  alias_method :[], :at
+
   def set(position, value)
     return unless in_map? position
 
     @grid[position.row][position.col] = value
   end
+
+  alias_method :[]=, :set
 
   def adjacent_positions_to(position)
     [position.up, position.right, position.down, position.left]
@@ -130,6 +151,7 @@ class Map
 
     while stack.size > 0
       position = stack.pop
+      filled.add position
       to_fill_with = yield position
 
       if to_fill_with
